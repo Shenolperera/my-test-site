@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <title>YouTube Downloader Setup | Shenol Perera</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Noto Sans Sinhala', sans-serif; 
+            background: radial-gradient(circle at top right, #1e293b, #020617);
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .mac-card {
+            border-radius: 20px;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
+        }
+        @media (min-width: 768px) {
+            .mac-card { border-radius: 28px; }
+        }
+        .win-btn {
+            background: linear-gradient(90deg, #0078d4, #00bcf2);
+            transition: all 0.3s ease;
+        }
+        .win-btn:active { transform: scale(0.95); }
+        
+        .chart-container { position: relative; width: 110px; height: 110px; margin: auto; }
+        @media (min-width: 768px) { .chart-container { width: 150px; height: 150px; } }
+
+        .animate-slide { animation: slideUp 0.5s ease-out forwards; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        html { scroll-behavior: smooth; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .drive-btn {
+            background: linear-gradient(135deg, #0F9D58, #1E8E3E);
+            transition: all 0.3s ease;
+        }
+        .drive-btn:active { transform: scale(0.96); }
+    </style>
+</head>
+<body class="p-3 md:p-8">
+
+    <!-- Welcome & Language Modal -->
+    <div id="language-modal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/98 backdrop-blur-3xl transition-all duration-500">
+        <div class="glass mac-card p-6 md:p-10 max-w-xl w-full text-center animate-slide border-blue-500/30">
+            <div class="mb-6 flex justify-center">
+                <div class="p-4 bg-blue-600/10 rounded-3xl border border-blue-500/20">
+                    <svg width="48" height="48" viewBox="0 0 88 88" fill="#0078D4"><path d="M0 12.402l35.687-4.854V41.74H0V12.402zm0 32.115h35.687v34.192L0 73.855V44.517zM39.117 7.08L88 0v41.74H39.117V7.08zm48.883 37.437V88L39.117 80.92V44.517H88z"/></svg>
+                </div>
+            </div>
+            
+            <div class="space-y-1 mb-6">
+                <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight uppercase">Setup Guide</h2>
+                <h2 class="text-xl font-bold text-blue-400">ස්ථාපන මාර්ගෝපදේශය</h2>
+                <h2 class="text-lg font-medium text-slate-400">Руководство по установке</h2>
+            </div>
+
+            <div class="mb-8">
+                <a href="https://shenolperera.wuaze.com/" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full hover:bg-blue-500/20 transition-all group">
+                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">By</span>
+                    <span class="text-xs font-bold text-blue-400 group-hover:underline">Shenol Perera</span>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="setLanguage('si')" class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-500/50 transition-all">
+                    <span class="font-bold">සිංහල</span>
+                    <span class="text-2xl">🇱🇰</span>
+                </button>
+                <button onclick="setLanguage('en')" class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-500/50 transition-all">
+                    <span class="font-bold">English</span>
+                    <span class="text-2xl">🇺🇸</span>
+                </button>
+                <button onclick="setLanguage('ru')" class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-blue-500/50 transition-all">
+                    <span class="font-bold">Русский</span>
+                    <span class="text-2xl">🇷🇺</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <header class="max-w-6xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center mb-8 md:mb-12 gap-4">
+        <div class="flex items-center gap-4 text-center sm:text-left">
+            <div class="hidden sm:block p-3 bg-white/5 rounded-2xl border border-white/10">
+                <svg width="24" height="24" viewBox="0 0 88 88" fill="#0078D4"><path d="M0 12.402l35.687-4.854V41.74H0V12.402zm0 32.115h35.687v34.192L0 73.855V44.517zM39.117 7.08L88 0v41.74H39.117V7.08zm48.883 37.437V88L39.117 80.92V44.517H88z"/></svg>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-black tracking-tight text-white">YT Downloader <span class="text-blue-500">Windows</span></h1>
+                <p id="mac-notice" class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Guide</p>
+            </div>
+        </div>
+
+        <button onclick="document.getElementById('language-modal').classList.remove('opacity-0', 'pointer-events-none')" class="glass px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-white/10 transition-all">
+            <span id="current-lang-label">සිංහල</span> 🌐
+        </button>
+    </header>
+
+    <main class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow">
+        <aside class="lg:col-span-3 space-y-4 order-1">
+            <div class="glass mac-card p-6 flex lg:flex-col items-center justify-around lg:justify-center gap-4">
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+                <div class="text-center">
+                    <h2 id="sidebar-progress-label" class="hidden lg:block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Progress</h2>
+                    <span id="progress-percent" class="text-3xl md:text-4xl font-black text-white">0%</span>
+                </div>
+            </div>
+
+            <div class="glass mac-card p-3 overflow-hidden">
+                <ul id="step-list" class="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-hide"></ul>
+            </div>
+        </aside>
+
+        <div class="lg:col-span-9 space-y-6 order-2">
+            <section class="glass mac-card p-6 md:p-10 lg:p-12 animate-slide" id="main-content-area">
+                <div class="mb-8">
+                    <span id="step-badge" class="inline-block px-3 py-1 bg-blue-600 text-white text-[9px] font-black rounded-lg uppercase tracking-widest mb-4">STEP 01</span>
+                    <h2 id="step-title" class="text-3xl md:text-4xl font-black text-white leading-tight">...</h2>
+                    <p id="step-description" class="mt-4 text-slate-400 text-base md:text-lg leading-relaxed"></p>
+                </div>
+                
+                <div id="step-warning-container" class="hidden bg-red-500/10 border-l-4 border-l-red-500 p-5 rounded-r-2xl mb-8">
+                    <p id="step-warning-text" class="text-sm md:text-base text-red-200 font-medium"></p>
+                </div>
+
+                <div id="python-download-section" class="hidden mb-10 text-center p-6 bg-blue-600/10 rounded-3xl border border-blue-500/20">
+                    <h3 id="python-dl-title" class="text-lg font-bold text-white mb-4">Python 3.14.4 (Windows 64-bit)</h3>
+                    <a href="https://www.python.org/ftp/python/3.14.4/python-3.14.4-amd64.exe" class="win-btn inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-white gap-2 shadow-xl shadow-blue-500/20">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1 14h-2v-4h2v4zm0-6h-2V7h2v3z"/></svg>
+                        Download Python 3.14.4
+                    </a>
+                </div>
+
+                <div id="commands-container" class="space-y-4 mb-10"></div>
+
+                <div id="download-section" class="hidden mb-10 text-center p-6 bg-gradient-to-br from-blue-500/10 to-emerald-500/10 rounded-3xl border border-blue-500/20 backdrop-blur-sm">
+                    <h3 id="dl-title" class="text-xl font-bold text-white mb-3">📥 Get the Downloader Script</h3>
+                    <p id="dl-subtext" class="text-sm text-slate-300 mb-6 max-w-md mx-auto">Secure the latest downloader.py from Google Drive — ready for high-quality YouTube downloads.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <a href="https://drive.google.com/file/d/19Yk7Vi7xOsTrn0-LFvNoXh0LCzME83kk/view?usp=sharing" target="_blank" class="drive-btn inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-white gap-3 shadow-xl shadow-emerald-900/30 transition-all hover:scale-[1.02]">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 10h-2V7c0-2.76-2.24-5-5-5S7 4.24 7 7v3H5c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2zm-7 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3-8h-6V7c0-1.66 1.34-3 3-3s3 1.34 3 3v3z"/></svg>
+                            Open in Google Drive
+                        </a>
+                        <button onclick="downloadScriptFromDrive()" class="win-btn inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-white gap-2 shadow-xl shadow-blue-500/20">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Direct Download Script
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-5">⚠️ If direct download fails, use "Open in Google Drive" and click download from there.</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 border-t border-white/10">
+                    <button id="prev-btn" class="w-full sm:w-auto px-8 py-4 rounded-xl font-bold bg-white/5 hover:bg-white/10 text-slate-400 transition-all">Back</button>
+                    <div class="flex gap-3 w-full sm:w-auto">
+                        <button id="complete-btn" class="flex-1 sm:flex-none px-8 py-4 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg shadow-emerald-900/20">Done</button>
+                        <button id="next-btn" class="flex-1 sm:flex-none px-8 py-4 rounded-xl font-bold win-btn text-white transition-all shadow-lg shadow-blue-900/20">Next</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="max-w-6xl mx-auto w-full mt-12 py-8 border-t border-white/5 text-center">
+        <a href="https://shenolperera.wuaze.com/" target="_blank" class="group inline-block">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1 group-hover:text-blue-400 transition-colors">Developed By</p>
+            <span class="text-lg font-black text-slate-300 group-hover:text-white transition-colors">Shenol Perera</span>
+        </a>
+    </footer>
+
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 glass px-6 py-3 rounded-full shadow-2xl border border-blue-500/30 transform translate-y-32 opacity-0 transition-all duration-500 z-[300] text-xs font-bold text-blue-400">
+        Copied! 📋
+    </div>
+
+    <script>
+        const translations = {
+            si: {
+                progress: "ප්‍රගතිය", stepLabel: "පියවර", warnLabel: "අවධානය", back: "පෙර", next: "ඊළඟ", complete: "සම්පූර්ණයි", completed: "අවසන් කළා ✓", copy: "පිටපත් කළා! 📋", macLabel: "Windows OS Guide", dlTitle: "Downloader Script ලබා ගන්න", dlSubtext: "Google Drive වෙතින් නවතම downloader.py ලබාගන්න — උසස් තත්ත්වයේ YouTube බාගැනීම් සඳහා සූදානම්.", pythonDlText: "Python 3.14.4 බාගත කරන්න",
+                data: [
+                    { title: "Python 3.14.4 Install කිරීම", desc: "පහත බොත්තම මගින් Python 3.14.4 බාගත කර Setup එක Run කරන්න.", warn: "Installer එකේ 'Add Python to PATH' යන්න අනිවාර්යයෙන්ම Tick කරන්න.", cmds: [{label: "Verify:", code: "python --version", type: "cmd"}] },
+                    { title: "yt-dlp ස්ථාපනය", desc: "වීඩියෝ බාගත කිරීමට අවශ්‍ය Library එක CMD එක හරහා දාගන්න.", warn: null, cmds: [{label: "Command:", code: "pip install yt-dlp", type: "cmd"}] },
+                    { title: "Chocolatey & FFmpeg", desc: "High quality වීඩියෝ සඳහා FFmpeg අනිවාර්යයි. එය පහසුවෙන් දාගැනීමට Chocolatey භාවිතා කරමු.", warn: "PowerShell එක Administrator ලෙස විවෘත කරන්න.", cmds: [
+                        {label: "PowerShell:", code: "Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))", type: "ps"},
+                        {label: "CMD (FFmpeg):", code: "choco install ffmpeg", type: "cmd"}
+                    ] },
+                    { title: "Script එක ධාවනය", desc: "දැන් Script එක Download කර එය ඇති Folder එකේ CMD එකක් විවෘත කර ධාවනය කරන්න.", warn: null, cmds: [{label: "Run Script:", code: "python downloader.py", type: "cmd"}] }
+                ]
+            },
+            en: {
+                progress: "Progress", stepLabel: "STEP", warnLabel: "Alert", back: "Back", next: "Next", complete: "Done", completed: "Finished ✓", copy: "Copied! 📋", macLabel: "Windows OS Guide", dlTitle: "Get Downloader Script", dlSubtext: "Grab the latest downloader.py from Google Drive — ready for high-quality YouTube downloads.", pythonDlText: "Download Python 3.14.4",
+                data: [
+                    { title: "Install Python 3.14.4", desc: "Download Python 3.14.4 using the button below and run the setup.", warn: "Check 'Add Python to PATH' during installation.", cmds: [{label: "Verify:", code: "python --version", type: "cmd"}] },
+                    { title: "Install yt-dlp", desc: "Install the core library via Command Prompt.", warn: null, cmds: [{label: "Command:", code: "pip install yt-dlp", type: "cmd"}] },
+                    { title: "Setup FFmpeg", desc: "FFmpeg is needed for HD quality. Use Chocolatey for quick setup.", warn: "Run PowerShell as Administrator.", cmds: [
+                        {label: "PS (Choco):", code: "Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))", type: "ps"},
+                        {label: "CMD (FFmpeg):", code: "choco install ffmpeg", type: "cmd"}
+                    ] },
+                    { title: "Final Launch", desc: "Download downloader.py and run it via CMD in the same folder.", warn: null, cmds: [{label: "Run:", code: "python downloader.py", type: "cmd"}] }
+                ]
+            },
+            ru: {
+                progress: "Прогресс", stepLabel: "ШАГ", warnLabel: "Внимание", back: "Назад", next: "Далее", complete: "Готово", completed: "Завершено ✓", copy: "Скопировано! 📋", macLabel: "Гид для Windows", dlTitle: "Получить скрипт загрузчика", dlSubtext: "Загрузите последнюю версию downloader.py с Google Диска — готово для высококачественных загрузок YouTube.", pythonDlText: "Скачать Python 3.14.4",
+                data: [
+                    { title: "Установка Python 3.14.4", desc: "Загрузите Python 3.14.4 с помощью кнопки ниже и запустите установку.", warn: "Обязательно отметьте 'Add Python to PATH' при установке.", cmds: [{label: "Проверить:", code: "python --version", type: "cmd"}] },
+                    { title: "Установка yt-dlp", desc: "Установите библиотеку через командную строку (CMD).", warn: null, cmds: [{label: "Команда:", code: "pip install yt-dlp", type: "cmd"}] },
+                    { title: "FFmpeg через Choco", desc: "FFmpeg нужен для HD. Используйте Chocolatey для быстрой установки.", warn: "Запустите PowerShell от имени администратора.", cmds: [
+                        {label: "PS (Choco):", code: "Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))", type: "ps"},
+                        {label: "CMD (FFmpeg):", code: "choco install ffmpeg", type: "cmd"}
+                    ] },
+                    { title: "Запуск скрипта", desc: "Скачайте downloader.py и запустите его через CMD в той же папке.", warn: null, cmds: [{label: "Запуск:", code: "python downloader.py", type: "cmd"}] }
+                ]
+            }
+        };
+
+        let currentLang = 'si';
+        let state = { step: 0, completed: [false, false, false, false] };
+        let chart = null;
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('language-modal').classList.add('opacity-0', 'pointer-events-none');
+            const labels = { si: 'සිංහල', en: 'English', ru: 'Русский' };
+            document.getElementById('current-lang-label').innerText = labels[lang];
+            updateDownloadSectionText();
+            loadStep(state.step);
+            updateProgress();
+        }
+
+        function updateDownloadSectionText() {
+            const t = translations[currentLang];
+            const dlTitleEl = document.getElementById('dl-title');
+            const dlSubtextEl = document.getElementById('dl-subtext');
+            if (dlTitleEl) dlTitleEl.innerText = t.dlTitle;
+            if (dlSubtextEl) dlSubtextEl.innerText = t.dlSubtext;
+        }
+
+        function initApp() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [0, 4], backgroundColor: ['#3b82f6', 'rgba(255,255,255,0.05)'], borderWidth: 0, cutout: '80%' }] },
+                options: { responsive: true, maintainAspectRatio: false, animation: { duration: 800 }, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            });
+            updateProgress();
+            loadStep(0);
+            updateDownloadSectionText();
+        }
+
+        function loadStep(idx) {
+            state.step = idx;
+            const t = translations[currentLang];
+            const data = t.data[idx];
+            
+            document.getElementById('step-badge').innerText = `${t.stepLabel} 0${idx + 1}`;
+            document.getElementById('step-title').innerText = data.title;
+            document.getElementById('step-description').innerText = data.desc;
+            
+            const pythonSection = document.getElementById('python-download-section');
+            if (idx === 0) {
+                pythonSection.classList.remove('hidden');
+                document.querySelector('#python-dl-title').innerText = "Python 3.14.4 (Windows 64-bit)";
+                document.querySelector('#python-download-section a').innerText = t.pythonDlText;
+            } else {
+                pythonSection.classList.add('hidden');
+            }
+
+            const dlSection = document.getElementById('download-section');
+            if (idx === 3) dlSection.classList.remove('hidden'); else dlSection.classList.add('hidden');
+
+            const warn = document.getElementById('step-warning-container');
+            if (data.warn) { document.getElementById('step-warning-text').innerText = data.warn; warn.classList.remove('hidden'); } else { warn.classList.add('hidden'); }
+
+            const container = document.getElementById('commands-container');
+            container.innerHTML = '';
+            data.cmds.forEach(cmd => {
+                const div = document.createElement('div');
+                div.className = "glass rounded-2xl overflow-hidden border border-white/5";
+                div.innerHTML = `
+                    <div class="bg-white/5 px-4 py-2 flex justify-between items-center text-[10px] font-bold text-slate-500">
+                        <span>${cmd.label}</span>
+                        <span class="text-blue-400">${cmd.type.toUpperCase()}</span>
+                    </div>
+                    <div class="p-4 flex flex-col sm:flex-row items-center gap-3">
+                        <code class="flex-grow text-blue-300 font-mono text-xs break-all">${escapeHtml(cmd.code)}</code>
+                        <button onclick="copyText('${escapeForCopy(cmd.code)}')" class="w-full sm:w-auto bg-blue-600 px-4 py-2 rounded-lg text-xs font-bold text-white active:scale-95 transition-transform">Copy</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            updateSidebar();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function escapeForCopy(str) {
+            return str.replace(/'/g, "\\'").replace(/`/g, '\\`');
+        }
+
+        function updateSidebar() {
+            const list = document.getElementById('step-list');
+            list.innerHTML = '';
+            translations[currentLang].data.forEach((s, i) => {
+                const li = document.createElement('li');
+                const active = state.step === i;
+                const done = state.completed[i];
+                li.className = `flex-shrink-0 lg:flex-shrink-1 flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border ${active ? 'bg-blue-600/20 border-blue-500/50' : 'border-transparent'}`;
+                li.onclick = () => loadStep(i);
+                li.innerHTML = `
+                    <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black ${done ? 'bg-emerald-500 text-white' : (active ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-500')}">
+                        ${done ? '✓' : i + 1}
+                    </div>
+                    <span class="text-xs font-bold whitespace-nowrap ${active ? 'text-white' : 'text-slate-500'}">${s.title}</span>
+                `;
+                list.appendChild(li);
+            });
+            document.getElementById('prev-btn').style.opacity = state.step === 0 ? '0' : '1';
+            document.getElementById('next-btn').style.display = state.step === 3 ? 'none' : 'block';
+            document.getElementById('complete-btn').innerText = state.completed[state.step] ? translations[currentLang].completed : translations[currentLang].complete;
+        }
+
+        function updateProgress() {
+            if (!chart) return;
+            const doneCount = state.completed.filter(Boolean).length;
+            chart.data.datasets[0].data = [doneCount, 4 - doneCount];
+            chart.update();
+            document.getElementById('progress-percent').innerText = Math.round((doneCount / 4) * 100) + "%";
+        }
+
+        function copyText(t) {
+            const el = document.createElement('textarea');
+            el.value = t;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const toast = document.getElementById('toast');
+            toast.innerText = translations[currentLang].copy;
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-32', 'opacity-0'), 2000);
+        }
+
+        // DIRECT DOWNLOAD FROM GOOGLE DRIVE using the provided file ID (bypassing preview)
+        function downloadScriptFromDrive() {
+            const fileId = "1jHqvKNoJpCQkWiI0kqj6pLUVUF2MPF47";
+            const directDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            
+            // Show toast notification for user
+            const toast = document.getElementById('toast');
+            toast.innerText = "Initiating download from Google Drive... 📂";
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-32', 'opacity-0'), 2000);
+            
+            // Create an invisible iframe or anchor to trigger download securely
+            const link = document.createElement('a');
+            link.href = directDownloadUrl;
+            link.download = 'downloader.py';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Fallback: In case of large file warning page, notify user to use the Drive button
+            setTimeout(() => {
+                const fallbackToast = document.getElementById('toast');
+                fallbackToast.innerText = "If download doesn't start, click 'Open in Google Drive' → download button";
+                fallbackToast.classList.remove('translate-y-32', 'opacity-0');
+                setTimeout(() => fallbackToast.classList.add('translate-y-32', 'opacity-0'), 4000);
+            }, 1500);
+        }
+
+        document.getElementById('prev-btn').onclick = () => state.step > 0 && loadStep(state.step - 1);
+        document.getElementById('next-btn').onclick = () => state.step < 3 && loadStep(state.step + 1);
+        document.getElementById('complete-btn').onclick = () => {
+            state.completed[state.step] = true;
+            updateProgress();
+            updateSidebar();
+            if(state.step < 3) setTimeout(() => loadStep(state.step + 1), 400);
+        };
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>s

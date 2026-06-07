@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image & Video Metadata Binder - Web Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            margin: 0;
+            /* Disable text selection to complement right-click disable */
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        input, textarea {
+            user-select: auto !important;
+            -webkit-user-select: auto !important;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4">
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl flex justify-between items-center mb-8 mt-4">
+        <div>
+            <h1 id="txt-title" class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                Media Metadata Binder
+            </h1>
+            <p id="txt-subtitle" class="text-gray-400 text-sm">Professional EXIF Editor by Shenol Perera</p>
+        </div>
+        <button onclick="toggleLang()" id="btn-lang" class="px-4 py-2 glass hover:bg-white/10 rounded-lg transition-all">
+            Russian
+        </button>
+    </header>
+
+    <main class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Left Side: Upload & Action -->
+        <div class="space-y-6">
+            <div id="dropzone" class="bg-white/5 border-2 border-dashed border-white/20 rounded-2xl p-10 flex flex-col items-center justify-center hover:border-blue-500/50 transition-all cursor-pointer relative group">
+                <input type="file" id="fileInput" multiple accept="image/jpeg, image/jpg, video/mp4, video/quicktime" class="absolute inset-0 opacity-0 cursor-pointer">
+                <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <svg id="upload-icon" class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
+                <p id="txt-dropzone" class="text-center text-gray-300">Drag & drop photos/videos or click to select</p>
+                <p class="text-xs text-gray-500 mt-2">Supports JPG, MP4, MOV</p>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="setPreset('mobile')" id="btn-mobile" class="flex-1 py-3 rounded-xl font-medium transition-all bg-blue-600 shadow-lg shadow-blue-500/30">
+                    Mobile Mode
+                </button>
+                <button onclick="setPreset('dslr')" id="btn-dslr" class="flex-1 py-3 rounded-xl font-medium transition-all bg-white/5 hover:bg-white/10">
+                    DSLR Mode
+                </button>
+            </div>
+
+            <button onclick="processMedia()" id="btn-process" class="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-indigo-700 transition-all shadow-xl">
+                Process & Download
+            </button>
+            
+            <div id="video-notice" class="hidden p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs text-yellow-200">
+                Note: Video metadata editing is limited to filename synchronization and file structure headers in browsers. Full video EXIF injection usually requires server-side tools like FFmpeg.
+            </div>
+        </div>
+
+        <!-- Right Side: Settings -->
+        <div class="glass rounded-2xl p-6 space-y-4">
+            <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span id="txt-settings">Metadata Settings</span>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label id="lbl-make" class="text-xs text-gray-400 uppercase tracking-wider">Camera Brand</label>
+                    <input type="text" id="in-make" value="HONOR" class="w-full bg-black/30 border border-white/10 rounded-lg p-2.5 focus:border-blue-500 outline-none transition-all">
+                </div>
+                <div class="space-y-1">
+                    <label id="lbl-model" class="text-xs text-gray-400 uppercase tracking-wider">Camera Model</label>
+                    <input type="text" id="in-model" value="RMO-NX1" class="w-full bg-black/30 border border-white/10 rounded-lg p-2.5 focus:border-blue-500 outline-none transition-all">
+                </div>
+                <div class="space-y-1">
+                    <label id="lbl-iso" class="text-xs text-gray-400 uppercase tracking-wider">ISO Speed</label>
+                    <input type="text" id="in-iso" value="100" class="w-full bg-black/30 border border-white/10 rounded-lg p-2.5 focus:border-blue-500 outline-none transition-all">
+                </div>
+                <div class="space-y-1">
+                    <label id="lbl-fnum" class="text-xs text-gray-400 uppercase tracking-wider">Aperture (F-Number)</label>
+                    <input type="text" id="in-fnum" value="1.8" class="w-full bg-black/30 border border-white/10 rounded-lg p-2.5 focus:border-blue-500 outline-none transition-all">
+                </div>
+                <div class="space-y-1">
+                    <label id="lbl-exp" class="text-xs text-gray-400 uppercase tracking-wider">Exposure Time</label>
+                    <input type="text" id="in-exp" value="1/1000" class="w-full bg-black/30 border border-white/10 rounded-lg p-2.5 focus:border-blue-500 outline-none transition-all">
+                </div>
+                <div class="space-y-1">
+                    <label id="lbl-focal" class="text-xs text-gray-400 uppercase tracking-wider">Focal Length (mm)</label>
+                    <input type="text" id="in-focal" value="4.75" class="w-full bg-black/30 border border-white/10 rounded-lg p-2.5 focus:border-blue-500 outline-none transition-all">
+                </div>
+            </div>
+            <div class="space-y-1 pt-2">
+                <label id="lbl-software" class="text-xs text-gray-400 uppercase tracking-wider">Software Version</label>
+                <input type="text" id="in-software" value="RMO-NX1_11.0.0.151" class="w-full bg-black/30 border border-white/10 rounded-lg p-2.5 focus:border-blue-500 outline-none transition-all">
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-8 text-center">
+        <div class="h-[1px] w-64 bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mb-6"></div>
+        <p class="text-gray-400 font-medium">Developed by Shenol Perera</p>
+        <a href="http://shenolperera.wuaze.com" target="_blank" class="text-blue-400 hover:text-blue-300 underline underline-offset-4 transition-colors">
+            shenolperera.wuaze.com
+        </a>
+    </footer>
+
+    <script>
+        // Disable Right Click
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        }, false);
+
+        // Disable specific shortcut keys (optional but common with right-click disable)
+        document.addEventListener('keydown', (e) => {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (
+                e.keyCode === 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+                (e.ctrlKey && e.keyCode === 85)
+            ) {
+                e.preventDefault();
+            }
+        });
+
+        let currentLang = 'en';
+        let selectedFiles = [];
+
+        const translations = {
+            en: {
+                title: "Media Metadata Binder",
+                subtitle: "Professional EXIF Editor by Shenol Perera",
+                dropZone: "Drag & drop photos/videos or click to select",
+                settings: "Metadata Settings",
+                make: "Camera Brand",
+                model: "Camera Model",
+                software: "Software Version",
+                iso: "ISO Speed",
+                fnum: "Aperture (F-Number)",
+                exp: "Exposure Time",
+                focal: "Focal Length (mm)",
+                process: "Process & Download",
+                processing: "Processing...",
+                langBtn: "Russian",
+                mobile: "Mobile Mode",
+                dslr: "DSLR Mode"
+            },
+            ru: {
+                title: "Редактор медиа-метаданных",
+                subtitle: "Профессиональный редактор EXIF от Шенола Переры",
+                dropZone: "Перетащите фото/видео или нажмите для выбора",
+                settings: "Настройки метаданных",
+                make: "Бренд камеры",
+                model: "Модель камеры",
+                software: "Версия ПО",
+                iso: "ISO",
+                fnum: "Диафрагма (F-число)",
+                exp: "Выдержка",
+                focal: "Фокусное расстояние (мм)",
+                process: "Обработать и скачать",
+                processing: "Обработка...",
+                langBtn: "English",
+                mobile: "Мобильный режим",
+                dslr: "Режим DSLR"
+            }
+        };
+
+        function toggleLang() {
+            currentLang = currentLang === 'en' ? 'ru' : 'en';
+            const t = translations[currentLang];
+            
+            document.getElementById('txt-title').innerText = t.title;
+            document.getElementById('txt-subtitle').innerText = t.subtitle;
+            document.getElementById('txt-dropzone').innerText = selectedFiles.length > 0 ? selectedFiles.length + " files selected" : t.dropZone;
+            document.getElementById('txt-settings').innerText = t.settings;
+            document.getElementById('lbl-make').innerText = t.make;
+            document.getElementById('lbl-model').innerText = t.model;
+            document.getElementById('lbl-iso').innerText = t.iso;
+            document.getElementById('lbl-fnum').innerText = t.fnum;
+            document.getElementById('lbl-exp').innerText = t.exp;
+            document.getElementById('lbl-focal').innerText = t.focal;
+            document.getElementById('lbl-software').innerText = t.software;
+            document.getElementById('btn-process').innerText = t.process;
+            document.getElementById('btn-lang').innerText = t.langBtn;
+            document.getElementById('btn-mobile').innerText = t.mobile;
+            document.getElementById('btn-dslr').innerText = t.dslr;
+        }
+
+        function setPreset(type) {
+            const btnMobile = document.getElementById('btn-mobile');
+            const btnDslr = document.getElementById('btn-dslr');
+
+            if (type === 'mobile') {
+                document.getElementById('in-make').value = "HONOR";
+                document.getElementById('in-model').value = "RMO-NX1";
+                document.getElementById('in-focal').value = "4.75";
+                document.getElementById('in-software').value = "RMO-NX1_11.0.0.151";
+                btnMobile.className = "flex-1 py-3 rounded-xl font-medium transition-all bg-blue-600 shadow-lg shadow-blue-500/30";
+                btnDslr.className = "flex-1 py-3 rounded-xl font-medium transition-all bg-white/5 hover:bg-white/10";
+            } else {
+                document.getElementById('in-make').value = "Canon";
+                document.getElementById('in-model').value = "EOS 5D Mark IV";
+                document.getElementById('in-focal').value = "50";
+                document.getElementById('in-software').value = "Firmware v1.2.1";
+                btnDslr.className = "flex-1 py-3 rounded-xl font-medium transition-all bg-purple-600 shadow-lg shadow-purple-500/30";
+                btnMobile.className = "flex-1 py-3 rounded-xl font-medium transition-all bg-white/5 hover:bg-white/10";
+            }
+        }
+
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            document.getElementById('txt-dropzone').innerText = selectedFiles.length + " files selected";
+            
+            const hasVideo = selectedFiles.some(f => f.type.startsWith('video/'));
+            document.getElementById('video-notice').classList.toggle('hidden', !hasVideo);
+        });
+
+        function parseFraction(val) {
+            if (val.includes('/')) {
+                const [num, den] = val.split('/').map(Number);
+                return [num || 1, den || 1];
+            }
+            return [Math.round(parseFloat(val) * 100) || 0, 100];
+        }
+
+        async function processMedia() {
+            if (selectedFiles.length === 0) return;
+            
+            const btn = document.getElementById('btn-process');
+            btn.innerText = translations[currentLang].processing;
+            btn.disabled = true;
+
+            const meta = {
+                make: document.getElementById('in-make').value,
+                model: document.getElementById('in-model').value,
+                iso: document.getElementById('in-iso').value,
+                fnum: document.getElementById('in-fnum').value,
+                exp: document.getElementById('in-exp').value,
+                focal: document.getElementById('in-focal').value,
+                software: document.getElementById('in-software').value
+            };
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                
+                if (file.type.startsWith('image/')) {
+                    const data = await new Promise(resolve => {
+                        const reader = new FileReader();
+                        reader.onload = e => resolve(e.target.result);
+                        reader.readAsDataURL(file);
+                    });
+
+                    const zeroth = {};
+                    zeroth[piexif.ImageIFD.Make] = meta.make;
+                    zeroth[piexif.ImageIFD.Model] = meta.model;
+                    zeroth[piexif.ImageIFD.Software] = meta.software;
+
+                    const exif = {};
+                    exif[piexif.ExifIFD.DateTimeOriginal] = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').replace(/-/g, ':');
+                    exif[piexif.ExifIFD.ISOSpeedRatings] = parseInt(meta.iso) || 100;
+                    exif[piexif.ExifIFD.FNumber] = parseFraction(meta.fnum);
+                    exif[piexif.ExifIFD.ExposureTime] = parseFraction(meta.exp);
+                    exif[piexif.ExifIFD.FocalLength] = parseFraction(meta.focal);
+
+                    const exifObj = { "0th": zeroth, "Exif": exif, "GPS": {} };
+                    const exifStr = piexif.dump(exifObj);
+                    const newImg = piexif.insert(exifStr, data);
+
+                    const link = document.createElement('a');
+                    link.href = newImg;
+                    link.download = `MODIFIED_${file.name}`;
+                    link.click();
+                } else if (file.type.startsWith('video/')) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(file);
+                    link.download = `MODIFIED_${file.name}`;
+                    link.click();
+                    setTimeout(() => URL.revokeObjectURL(link.href), 100);
+                }
+            }
+
+            btn.innerText = translations[currentLang].process;
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
