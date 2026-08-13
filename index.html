@@ -3,40 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALFA Creation | Premium Design Studio</title>
+    <title>ALFA Creation | Premium Graphic Design Studio</title>
     
-    <!-- Premium Fonts -->
+    <!-- Premium Fonts for Secondary Text -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Orbitron for the geometric tech logo feel, Inter for clean UI text -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Montserrat provides the clean, wide, modern look seen in your "CREATION" subtext -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS for robust layout architecture -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Three.js for 3D Wavy Background -->
+    <!-- Three.js & GSAP for Senior-Level Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- GSAP for Cinematic Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        logo: ['Orbitron', 'sans-serif'],
+                        sans: ['Montserrat', 'sans-serif'],
                     },
                     colors: {
                         alfa: {
-                            black: '#03050a',
-                            dark: '#080c16',
+                            bg: '#04060b',
                             blue: '#0055ff',
                             cyan: '#00d2ff',
+                            dark: '#0a0f1c'
                         }
                     }
                 }
@@ -45,29 +43,14 @@
     </script>
 
     <style>
-        /* Base Reset & Custom Scrollbar */
         body {
-            background-color: #03050a;
+            background-color: #04060b;
             color: #ffffff;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #03050a; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1a2333; 
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0055ff; 
-        }
-
-        /* 3D WebGL Canvas Container */
+        /* WebGL Background Canvas */
         #webgl-container {
             position: fixed;
             top: 0;
@@ -76,236 +59,355 @@
             height: 100vh;
             z-index: -1;
             pointer-events: none;
-            /* Subtle radial gradient to match the image's dark center */
-            background: radial-gradient(circle at center, transparent 0%, #03050a 100%);
+            background: radial-gradient(circle at center, rgba(0, 40, 100, 0.1) 0%, #04060b 80%);
         }
 
-        /* Premium Logo Styling */
-        .brand-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(4rem, 12vw, 9rem);
-            font-weight: 900;
-            line-height: 1;
-            letter-spacing: clamp(0.2rem, 1vw, 0.5rem);
-            
-            /* Metallic Blue Gradient */
-            background: linear-gradient(180deg, #b3e5fc 0%, #00d2ff 30%, #0055ff 80%, #002266 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            
-            /* 3D Extrusion & Inner Glow Effect via drop-shadows */
-            filter: drop-shadow(0px 10px 15px rgba(0, 85, 255, 0.4)) 
-                    drop-shadow(0px 2px 2px rgba(255, 255, 255, 0.2));
-            
-            position: relative;
-            z-index: 10;
+        /* 
+         * EXACT ALFA LOGO RECREATION 
+         * Using SVG filters to create the 3D embossed and glowing metallic look 
+         */
+        .alfa-logo-svg {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            filter: drop-shadow(0px 15px 25px rgba(0, 85, 255, 0.3));
         }
 
-        .brand-sub {
-            font-family: 'Inter', sans-serif;
-            font-size: clamp(1rem, 3vw, 2.5rem);
+        .alfa-text-creation {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(1.2rem, 3vw, 2.2rem);
             font-weight: 500;
-            letter-spacing: clamp(0.8rem, 3vw, 2rem);
+            letter-spacing: 0.6em; /* Extremely wide tracking to match image */
+            margin-left: 0.6em; /* Visual alignment fix */
             color: #ffffff;
-            margin-left: clamp(0.8rem, 3vw, 2rem); /* Visual centering correction */
             text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
         }
 
-        .brand-tagline {
+        .alfa-tagline {
             font-size: clamp(0.7rem, 1.2vw, 0.9rem);
-            letter-spacing: 0.2em;
+            letter-spacing: 0.25em;
             text-transform: uppercase;
             font-weight: 600;
+            margin-top: 4rem;
         }
-        .brand-tagline span { color: #00d2ff; }
 
-        /* Bento Grid Glassmorphism */
-        .bento-panel {
-            background: rgba(10, 14, 25, 0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .alfa-tagline .blue-text {
+            color: #00d2ff;
+        }
+
+        /* Glassmorphism Design System */
+        .glass-panel {
+            background: rgba(10, 15, 28, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
         }
 
-        .bento-panel::before {
+        .glass-panel::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0, 210, 255, 0.06), transparent 40%);
-            z-index: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0, 210, 255, 0.1), transparent 40%);
             opacity: 0;
-            transition: opacity 0.4s;
+            transition: opacity 0.5s;
             pointer-events: none;
+            z-index: 0;
         }
 
-        .bento-panel:hover::before { opacity: 1; }
-
-        .bento-panel:hover {
+        .glass-panel:hover::before { opacity: 1; }
+        .glass-panel:hover {
             border-color: rgba(0, 210, 255, 0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -10px rgba(0, 85, 255, 0.15);
+            transform: translateY(-5px);
         }
 
-        .bento-content { position: relative; z-index: 1; }
+        .glass-content { position: relative; z-index: 1; }
 
-        /* Pulsing Status Dot */
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #10b981; /* Emerald green */
-            border-radius: 50%;
-            box-shadow: 0 0 10px #10b981, 0 0 20px #10b981;
-            animation: pulse-green 2s infinite;
+        /* Section Typography */
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #00d2ff;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: block;
         }
 
-        @keyframes pulse-green {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #04060b; }
+        ::-webkit-scrollbar-thumb { background: #1a2333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0055ff; }
 
-        /* Subtle floating animation for hero */
-        .float-anim {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Hide elements initially for GSAP */
-        .gsap-reveal { opacity: 0; visibility: hidden; }
+        /* Hide elements for GSAP initialization */
+        .gsap-reveal { visibility: hidden; }
     </style>
 </head>
-<body class="antialiased selection:bg-alfa-cyan selection:text-alfa-black">
+<body class="antialiased">
 
     <!-- 3D Background Canvas -->
     <div id="webgl-container"></div>
 
-    <!-- Navigation (Ultra Minimal) -->
     <nav class="fixed top-0 w-full p-6 lg:px-12 flex justify-between items-center z-50 mix-blend-difference gsap-reveal">
-        <div class="font-logo font-bold text-xl tracking-widest text-white">
-            AC<span class="text-alfa-cyan">.</span>
+        <div class="font-bold text-xl tracking-widest text-white">
+            ALFA<span class="text-alfa-cyan">.</span>
         </div>
-        <a href="#contact" class="text-xs font-semibold tracking-widest uppercase hover:text-alfa-cyan transition-colors duration-300">
-            Connect
-        </a>
+        <div class="hidden md:flex gap-8 text-xs font-semibold tracking-widest uppercase">
+            <a href="#services" class="hover:text-alfa-cyan transition-colors">Services</a>
+            <a href="#work" class="hover:text-alfa-cyan transition-colors">Work</a>
+            <a href="#contact" class="hover:text-alfa-cyan transition-colors">Contact</a>
+        </div>
     </nav>
 
     <!-- Hero Section -->
-    <main class="relative h-screen w-full flex flex-col justify-center items-center px-4">
+    <main class="relative min-h-screen w-full flex flex-col justify-center items-center px-4 pt-20">
         
-        <div class="flex flex-col items-center justify-center float-anim gsap-reveal hero-group">
-            <!-- Main Logo Text -->
-            <h1 class="brand-text">ALFA</h1>
+        <div class="flex flex-col items-center justify-center w-full max-w-4xl gsap-reveal hero-group">
             
-            <!-- Secondary Text -->
-            <div class="brand-sub mt-2 mb-12">CREATION</div>
+            <!-- 
+              EXACT ALFA LOGO RECREATION
+              Manually coded SVG paths to perfectly match the user's geometric custom font image.
+            -->
+            <svg viewBox="0 0 340 100" class="alfa-logo-svg" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <!-- Metallic Blue Gradient -->
+                    <linearGradient id="alfaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#00d2ff" />
+                        <stop offset="40%" stop-color="#0066ff" />
+                        <stop offset="100%" stop-color="#001b66" />
+                    </linearGradient>
+                    
+                    <!-- 3D Bevel & Glow Filters -->
+                    <filter id="bevel3D" x="-20%" y="-20%" width="140%" height="140%">
+                        <!-- Bright top edge highlight -->
+                        <feDropShadow dx="0" dy="-2" stdDeviation="1" flood-color="#a6e3ff" flood-opacity="0.8"/>
+                        <!-- Dark bottom shadow for depth -->
+                        <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.8"/>
+                    </filter>
+                </defs>
+
+                <g fill="url(#alfaGrad)" filter="url(#bevel3D)">
+                    <!-- Letter A (Left) -->
+                    <!-- Top Chevron -->
+                    <path d="M 45 15 L 15 35 L 25 43 L 45 30 L 65 43 L 75 35 Z" />
+                    <!-- Bottom Bridge -->
+                    <path d="M 15 85 L 15 50 L 75 50 L 75 85 L 58 85 L 58 64 L 32 64 L 32 85 Z" />
+
+                    <!-- Letter L -->
+                    <path d="M 95 15 L 112 15 L 112 70 L 155 70 L 140 85 L 95 85 Z" />
+
+                    <!-- Letter F -->
+                    <!-- Top Floating Bar -->
+                    <path d="M 165 15 L 220 15 L 208 30 L 165 30 Z" />
+                    <!-- Middle Bar and Stem -->
+                    <path d="M 165 43 L 182 43 L 182 54 L 210 54 L 196 70 L 182 70 L 182 85 L 165 85 Z" />
+
+                    <!-- Letter A (Right) -->
+                    <!-- Top Chevron -->
+                    <path d="M 275 15 L 245 35 L 255 43 L 275 30 L 295 43 L 305 35 Z" />
+                    <!-- Bottom Bridge -->
+                    <path d="M 245 85 L 245 50 L 305 50 L 305 85 L 288 85 L 288 64 L 262 64 L 262 85 Z" />
+                </g>
+            </svg>
+
+            <!-- Exact matching subtext -->
+            <div class="alfa-text-creation mt-4">CREATION</div>
             
-            <!-- Tagline -->
-            <p class="brand-tagline text-gray-400">
-                Create Your Design <span>With ALFA</span>
+            <!-- Exact matching tagline -->
+            <p class="alfa-tagline text-gray-300 mt-16">
+                <span class="blue-text">CREATE YOUR DESIGN</span> WITH ALFA
             </p>
         </div>
 
-        <!-- Scroll Indicator -->
-        <a href="#contact" class="absolute bottom-10 flex flex-col items-center gap-2 text-gray-500 hover:text-alfa-cyan transition-colors duration-300 gsap-reveal hero-group">
-            <span class="text-[10px] tracking-[0.2em] uppercase">Scroll</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce"></i>
-        </a>
     </main>
 
-    <!-- Contact Bento Grid Section -->
-    <section id="contact" class="relative min-h-screen w-full flex items-center justify-center px-4 py-24 z-10 bg-gradient-to-b from-transparent to-[#020306]">
-        
-        <div class="w-full max-w-5xl">
-            <div class="mb-12 text-center gsap-reveal grid-item">
-                <h2 class="text-3xl md:text-4xl font-light tracking-wide text-white mb-2">Connect with <span class="font-logo font-bold text-alfa-cyan">ALFA</span></h2>
-                <p class="text-gray-400 text-sm tracking-widest uppercase">Digital & Physical Hubs</p>
+    <!-- Services Section -->
+    <section id="services" class="relative w-full py-24 px-6 lg:px-12 z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 gsap-reveal grid-item">
+                <span class="section-label">Our Expertise</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Graphic Design Solutions</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-sm leading-relaxed">Elevating brands through precision-crafted visual identities, digital interfaces, and immersive content creation.</p>
             </div>
 
-            <!-- Grid Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4 md:gap-6 auto-rows-[200px]">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                <!-- Status & Availability (Col Span 1, Row 1) -->
-                <div class="bento-panel p-8 flex flex-col justify-between gsap-reveal grid-item cursor-default group" id="bento-1">
-                    <div class="bento-content">
+                <!-- Service 1 -->
+                <div class="glass-panel p-8 gsap-reveal grid-item">
+                    <div class="glass-content">
+                        <i data-lucide="pen-tool" class="w-8 h-8 text-alfa-cyan mb-6"></i>
+                        <h3 class="text-xl font-bold text-white mb-3">Brand Identity</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">Logos, typography, color palettes, and comprehensive brand guidelines that define your market presence.</p>
+                    </div>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="glass-panel p-8 gsap-reveal grid-item">
+                    <div class="glass-content">
+                        <i data-lucide="layout-template" class="w-8 h-8 text-alfa-cyan mb-6"></i>
+                        <h3 class="text-xl font-bold text-white mb-3">UI/UX Design</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">User-centric website and application interfaces focusing on aesthetics and seamless digital experiences.</p>
+                    </div>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="glass-panel p-8 gsap-reveal grid-item">
+                    <div class="glass-content">
+                        <i data-lucide="layers" class="w-8 h-8 text-alfa-cyan mb-6"></i>
+                        <h3 class="text-xl font-bold text-white mb-3">Commercial Assets</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">High-end marketing materials, social media campaigns, and digital composites built to convert.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Selected Works Section -->
+    <section id="work" class="relative w-full py-24 px-6 lg:px-12 z-10 bg-[#020306]/80">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gsap-reveal grid-item">
+                <div>
+                    <span class="section-label">Portfolio</span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-white">Selected Works</h2>
+                </div>
+                <a href="#contact" class="hidden md:flex items-center gap-2 text-alfa-cyan text-sm font-bold tracking-widest uppercase hover:text-white transition-colors">
+                    Start a project <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- CSS Geometric Art Placeholders for Portfolio -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Project 1 -->
+                <div class="group relative rounded-2xl overflow-hidden aspect-video bg-[#0a0f1c] border border-white/5 cursor-pointer gsap-reveal grid-item">
+                    <!-- Abstract CSS Art Placeholder -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity duration-700">
+                        <div class="w-32 h-32 rounded-full border border-alfa-blue/30 absolute animate-ping"></div>
+                        <div class="w-24 h-24 bg-gradient-to-tr from-alfa-blue to-alfa-cyan rounded-lg rotate-12 group-hover:rotate-45 transition-transform duration-700"></div>
+                    </div>
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <span class="text-alfa-cyan text-xs tracking-widest font-bold uppercase mb-2">Brand Identity</span>
+                        <h3 class="text-2xl font-bold text-white">Nexus Tech Rebrand</h3>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="group relative rounded-2xl overflow-hidden aspect-video bg-[#0a0f1c] border border-white/5 cursor-pointer gsap-reveal grid-item">
+                    <!-- Abstract CSS Art Placeholder -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-50 group-hover:opacity-100 transition-opacity duration-700">
+                        <div class="w-[120%] h-1 bg-alfa-cyan/20 absolute -rotate-45"></div>
+                        <div class="w-32 h-32 bg-alfa-blue mix-blend-screen rounded-full blur-xl absolute -left-10"></div>
+                        <div class="w-32 h-32 bg-alfa-cyan mix-blend-screen rounded-full blur-xl absolute right-0"></div>
+                    </div>
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <span class="text-alfa-cyan text-xs tracking-widest font-bold uppercase mb-2">Digital Campaign</span>
+                        <h3 class="text-2xl font-bold text-white">Vesper Cosmetics</h3>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Bento Grid Section -->
+    <section id="contact" class="relative w-full py-24 px-6 lg:px-12 z-10">
+        
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16 gsap-reveal grid-item">
+                <span class="section-label">Connect</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-white">Let's Create Together</h2>
+            </div>
+
+            <!-- Grid Layout matching exact details from screenshot -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[auto]">
+                
+                <!-- Status & Availability -->
+                <div class="glass-panel p-8 flex flex-col justify-between gsap-reveal grid-item">
+                    <div class="glass-content">
                         <div class="flex items-center gap-3 mb-6">
                             <i data-lucide="clock" class="text-gray-400 w-5 h-5"></i>
-                            <span class="text-xs tracking-widest uppercase text-gray-400">Status</span>
+                            <span class="text-xs tracking-widest uppercase text-gray-400 font-bold">Status</span>
                         </div>
                         <div class="flex items-center gap-4">
-                            <div class="status-dot"></div>
-                            <span class="text-2xl font-light text-white tracking-wide">Always Open</span>
+                            <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
+                            <span class="text-xl font-bold text-white">Always Open</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Main Location (Col Span 2, Row 1) -->
-                <div class="bento-panel p-8 flex flex-col justify-between md:col-span-2 gsap-reveal grid-item group" id="bento-2">
-                    <div class="bento-content">
+                <!-- Main Location -->
+                <div class="glass-panel p-8 flex flex-col justify-between md:col-span-2 gsap-reveal grid-item">
+                    <div class="glass-content">
                         <div class="flex items-center gap-3 mb-6">
                             <i data-lucide="map-pin" class="text-gray-400 w-5 h-5"></i>
-                            <span class="text-xs tracking-widest uppercase text-gray-400">Headquarters & Service Areas</span>
+                            <span class="text-xs tracking-widest uppercase text-gray-400 font-bold">Headquarters & Service Areas</span>
                         </div>
-                        <h3 class="text-xl md:text-2xl font-light text-alfa-cyan mb-2 leading-relaxed">
+                        <h3 class="text-xl md:text-2xl font-bold text-alfa-cyan mb-3">
                             Liyanagemulla, Seeduwa<br>Sri Lanka, 11410
                         </h3>
-                        <p class="text-gray-400 text-sm">Colombo · Negombo · Seeduwa</p>
+                        <p class="text-gray-400 text-sm font-medium">Colombo · Negombo · Seeduwa</p>
                     </div>
                 </div>
 
-                <!-- Digital Links (Col Span 1, Row 2) -->
-                <a href="https://linktr.ee" target="_blank" class="bento-panel p-8 flex flex-col justify-between gsap-reveal grid-item group block" id="bento-3">
-                    <div class="bento-content h-full flex flex-col justify-between">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="link-2" class="text-gray-400 w-5 h-5 group-hover:text-alfa-cyan transition-colors"></i>
-                            <span class="text-xs tracking-widest uppercase text-gray-400">Links</span>
+                <!-- Digital Links -->
+                <a href="https://linktr.ee" target="_blank" class="glass-panel p-8 flex flex-col justify-between gsap-reveal grid-item group">
+                    <div class="glass-content h-full flex flex-col justify-between">
+                        <div class="flex items-center gap-3 mb-6">
+                            <i data-lucide="link-2" class="text-gray-400 w-5 h-5"></i>
+                            <span class="text-xs tracking-widest uppercase text-gray-400 font-bold">Links</span>
                         </div>
                         <div class="flex items-end justify-between">
-                            <span class="text-lg font-medium text-white group-hover:text-alfa-cyan transition-colors">linktr.ee</span>
+                            <span class="text-lg font-bold text-white group-hover:text-alfa-cyan transition-colors">linktr.ee</span>
                             <i data-lucide="arrow-up-right" class="text-gray-500 w-5 h-5 group-hover:text-alfa-cyan transition-all transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
                         </div>
                     </div>
                 </a>
 
-                <!-- Contact Channels (Col Span 2, Row 2) -->
-                <div class="bento-panel p-8 flex flex-col justify-center md:col-span-2 gsap-reveal grid-item group" id="bento-4">
-                    <div class="bento-content">
+                <!-- Contact Channels -->
+                <div class="glass-panel p-8 flex flex-col justify-center md:col-span-2 gsap-reveal grid-item">
+                    <div class="glass-content">
                         <div class="flex items-center gap-3 mb-6">
                             <i data-lucide="phone-call" class="text-gray-400 w-5 h-5"></i>
-                            <span class="text-xs tracking-widest uppercase text-gray-400">Direct Comms</span>
+                            <span class="text-xs tracking-widest uppercase text-gray-400 font-bold">Contact Info</span>
                         </div>
                         
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <!-- Phones -->
-                            <div class="space-y-4">
-                                <a href="tel:+94771467469" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
-                                    <i data-lucide="phone" class="w-4 h-4 text-alfa-cyan"></i>
-                                    <span class="text-sm font-medium tracking-wide">+94 77 146 7469</span>
+                            <div class="space-y-5">
+                                <a href="tel:+94771467469" class="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group">
+                                    <div class="p-2 rounded-lg bg-white/5 group-hover:bg-alfa-cyan/20 transition-colors">
+                                        <i data-lucide="phone" class="w-4 h-4 text-alfa-cyan"></i>
+                                    </div>
+                                    <span class="text-sm font-bold tracking-wide">+94 77 146 7469</span>
                                 </a>
-                                <a href="https://wa.me/94781467469" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
-                                    <!-- Custom simple WA icon using Lucide message-circle -->
-                                    <i data-lucide="message-circle" class="w-4 h-4 text-[#25D366]"></i>
-                                    <span class="text-sm font-medium tracking-wide">+94 78 146 7469</span>
+                                <a href="https://wa.me/94781467469" target="_blank" class="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group">
+                                    <div class="p-2 rounded-lg bg-white/5 group-hover:bg-[#25D366]/20 transition-colors">
+                                        <i data-lucide="message-circle" class="w-4 h-4 text-[#25D366]"></i>
+                                    </div>
+                                    <span class="text-sm font-bold tracking-wide">+94 78 146 7469</span>
                                 </a>
                             </div>
                             <!-- Email -->
-                            <div class="space-y-4">
-                                <a href="mailto:alfacreation019@gmail.com" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
-                                    <i data-lucide="mail" class="w-4 h-4 text-alfa-cyan"></i>
-                                    <span class="text-sm font-medium tracking-wide break-all">alfacreation019@gmail.com</span>
+                            <div class="space-y-5">
+                                <a href="mailto:alfacreation019@gmail.com" class="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group">
+                                    <div class="p-2 rounded-lg bg-white/5 group-hover:bg-alfa-cyan/20 transition-colors">
+                                        <i data-lucide="mail" class="w-4 h-4 text-alfa-cyan"></i>
+                                    </div>
+                                    <span class="text-sm font-bold tracking-wide truncate">alfacreation019@gmail.com</span>
                                 </a>
-                                <div class="flex items-center gap-3 text-gray-500">
-                                    <i data-lucide="message-square" class="w-4 h-4"></i>
-                                    <span class="text-sm font-medium tracking-wide">ALFA Creation (Messenger)</span>
+                                <div class="flex items-center gap-4 text-gray-300 hover:text-white transition-colors group cursor-default">
+                                    <div class="p-2 rounded-lg bg-white/5">
+                                        <i data-lucide="message-square" class="w-4 h-4 text-[#0084FF]"></i>
+                                    </div>
+                                    <span class="text-sm font-bold tracking-wide">ALFA Creation</span>
                                 </div>
                             </div>
                         </div>
@@ -317,22 +419,24 @@
     </section>
 
     <!-- Footer -->
-    <footer class="w-full py-8 text-center text-xs tracking-[0.2em] text-gray-600 uppercase border-t border-white/5 bg-[#020306]">
+    <footer class="w-full py-8 text-center text-xs font-bold tracking-[0.2em] text-gray-600 uppercase border-t border-white/5 bg-[#020306]">
         &copy; 2026 ALFA Creation. All Rights Reserved.
     </footer>
 
-    <!-- Scripts -->
     <script>
-        // 1. Initialize Icons
+        // Initialize Icons
         lucide.createIcons();
 
-        // 2. Three.js Background Implementation (Wavy glowing lines)
+        // Register GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- Three.js Wavy Background Implementation ---
         const initThreeJSBackground = () => {
             const container = document.getElementById('webgl-container');
             const scene = new THREE.Scene();
             
-            // Fog to fade out edges smoothly matching the dark vibe
-            scene.fog = new THREE.FogExp2(0x03050a, 0.0015);
+            // Fog for depth
+            scene.fog = new THREE.FogExp2(0x04060b, 0.001);
 
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -341,28 +445,27 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Create a plane geometry with many segments to manipulate vertices
-            const geometry = new THREE.PlaneGeometry(200, 200, 60, 60);
+            // Plane geometry with segments for vertex manipulation
+            const geometry = new THREE.PlaneGeometry(250, 250, 70, 70);
             
-            // Material: Wireframe for that tech/abstract line aesthetic
+            // Material: Thin, elegant wireframe matching the original image's abstract lines
             const material = new THREE.MeshBasicMaterial({ 
                 color: 0x0055ff, 
                 wireframe: true,
                 transparent: true,
-                opacity: 0.15 // Very subtle, as requested for a premium background
+                opacity: 0.08 // Very subtle
             });
 
             const plane = new THREE.Mesh(geometry, material);
             
-            // Rotate plane to lie flat, then tilt towards camera
-            plane.rotation.x = -Math.PI / 2 + 0.2;
-            plane.position.y = -20;
+            // Tilt and position
+            plane.rotation.x = -Math.PI / 2.2;
+            plane.position.y = -15;
             scene.add(plane);
 
             camera.position.z = 60;
             camera.position.y = 10;
 
-            // Save original Z positions for animation
             const positionAttribute = geometry.attributes.position;
             const originalZs = [];
             for (let i = 0; i < positionAttribute.count; i++) {
@@ -376,22 +479,21 @@
                 requestAnimationFrame(animate);
                 const elapsedTime = clock.getElapsedTime();
 
-                // Manipulate vertices to create a flowing wave
+                // Gentle flowing wave math
                 for (let i = 0; i < positionAttribute.count; i++) {
                     const x = positionAttribute.getX(i);
                     const y = positionAttribute.getY(i);
                     
-                    // Complex sine/cosine mix for organic fluid movement
                     const z = originalZs[i] 
-                            + Math.sin(x * 0.05 + elapsedTime * 0.5) * 5 
-                            + Math.cos(y * 0.05 + elapsedTime * 0.3) * 5;
+                            + Math.sin(x * 0.03 + elapsedTime * 0.4) * 6 
+                            + Math.cos(y * 0.04 + elapsedTime * 0.2) * 6;
                     
                     positionAttribute.setZ(i, z);
                 }
                 positionAttribute.needsUpdate = true;
                 
-                // Slow rotation of the entire plane
-                plane.rotation.z = elapsedTime * 0.02;
+                // Slow rotation
+                plane.rotation.z = elapsedTime * 0.01;
 
                 renderer.render(scene, camera);
             };
@@ -406,46 +508,44 @@
             });
         };
 
-        // 3. GSAP Animations (Cinematic Entrance)
+        // --- GSAP Entrance & Scroll Animations ---
         const initAnimations = () => {
-            // Remove visibility hidden to allow GSAP to handle opacity
             gsap.set(".gsap-reveal", { visibility: "visible" });
 
+            // Hero Entrance
             const tl = gsap.timeline();
-
-            // Intro fade in for nav and hero
             tl.fromTo("nav", 
                 { y: -20, opacity: 0 }, 
                 { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
             )
             .fromTo(".hero-group", 
-                { y: 30, opacity: 0, filter: "blur(10px)" }, 
-                { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.5, stagger: 0.2, ease: "power4.out" },
-                "-=0.5" // Start slightly before nav finishes
+                { scale: 0.9, y: 30, opacity: 0, filter: "blur(10px)" }, 
+                { scale: 1, y: 0, opacity: 1, filter: "blur(0px)", duration: 1.5, ease: "power4.out" },
+                "-=0.5"
             );
 
-            // Scroll Trigger logic for the Bento Grid
-            // Using Intersection Observer to trigger GSAP when scrolling down
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        gsap.fromTo(entry.target,
-                            { y: 50, opacity: 0 },
-                            { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
-                        );
-                        observer.unobserve(entry.target);
+            // Scroll Trigger for Grid Items (Services, Portfolio, Contact)
+            gsap.utils.toArray('.grid-item').forEach((item, i) => {
+                gsap.fromTo(item,
+                    { y: 50, opacity: 0 },
+                    {
+                        y: 0, 
+                        opacity: 1, 
+                        duration: 1, 
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: item,
+                            start: "top 85%", // Trigger when top of element hits 85% down viewport
+                            toggleActions: "play none none none"
+                        }
                     }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.grid-item').forEach(item => {
-                observer.observe(item);
+                );
             });
         };
 
-        // 4. Interactive Bento Mouse Hover Glow Effect
-        const initBentoHover = () => {
-            document.querySelectorAll('.bento-panel').forEach(panel => {
+        // --- Glassmorphism Mouse Hover Glow ---
+        const initGlassHover = () => {
+            document.querySelectorAll('.glass-panel').forEach(panel => {
                 panel.onmousemove = e => {
                     const rect = panel.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -457,11 +557,11 @@
             });
         };
 
-        // Execute all scripts on load
+        // Initialize everything on load
         window.addEventListener('DOMContentLoaded', () => {
             initThreeJSBackground();
             initAnimations();
-            initBentoHover();
+            initGlassHover();
         });
 
     </script>
