@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALFA Creation | Premium Design Studio</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Orbitron for the geometric tech logo feel, Inter for clean UI text -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS for robust layout architecture -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Three.js for 3D Wavy Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- GSAP for Cinematic Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        logo: ['Orbitron', 'sans-serif'],
+                    },
+                    colors: {
+                        alfa: {
+                            black: '#03050a',
+                            dark: '#080c16',
+                            blue: '#0055ff',
+                            cyan: '#00d2ff',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Reset & Custom Scrollbar */
+        body {
+            background-color: #03050a;
+            color: #ffffff;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #03050a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a2333; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0055ff; 
+        }
+
+        /* 3D WebGL Canvas Container */
+        #webgl-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            /* Subtle radial gradient to match the image's dark center */
+            background: radial-gradient(circle at center, transparent 0%, #03050a 100%);
+        }
+
+        /* Premium Logo Styling */
+        .brand-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(4rem, 12vw, 9rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: clamp(0.2rem, 1vw, 0.5rem);
+            
+            /* Metallic Blue Gradient */
+            background: linear-gradient(180deg, #b3e5fc 0%, #00d2ff 30%, #0055ff 80%, #002266 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* 3D Extrusion & Inner Glow Effect via drop-shadows */
+            filter: drop-shadow(0px 10px 15px rgba(0, 85, 255, 0.4)) 
+                    drop-shadow(0px 2px 2px rgba(255, 255, 255, 0.2));
+            
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1rem, 3vw, 2.5rem);
+            font-weight: 500;
+            letter-spacing: clamp(0.8rem, 3vw, 2rem);
+            color: #ffffff;
+            margin-left: clamp(0.8rem, 3vw, 2rem); /* Visual centering correction */
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+
+        .brand-tagline {
+            font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .brand-tagline span { color: #00d2ff; }
+
+        /* Bento Grid Glassmorphism */
+        .bento-panel {
+            background: rgba(10, 14, 25, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bento-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0, 210, 255, 0.06), transparent 40%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .bento-panel:hover::before { opacity: 1; }
+
+        .bento-panel:hover {
+            border-color: rgba(0, 210, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 85, 255, 0.15);
+        }
+
+        .bento-content { position: relative; z-index: 1; }
+
+        /* Pulsing Status Dot */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981; /* Emerald green */
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981, 0 0 20px #10b981;
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Subtle floating animation for hero */
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Hide elements initially for GSAP */
+        .gsap-reveal { opacity: 0; visibility: hidden; }
+    </style>
+</head>
+<body class="antialiased selection:bg-alfa-cyan selection:text-alfa-black">
+
+    <!-- 3D Background Canvas -->
+    <div id="webgl-container"></div>
+
+    <!-- Navigation (Ultra Minimal) -->
+    <nav class="fixed top-0 w-full p-6 lg:px-12 flex justify-between items-center z-50 mix-blend-difference gsap-reveal">
+        <div class="font-logo font-bold text-xl tracking-widest text-white">
+            AC<span class="text-alfa-cyan">.</span>
+        </div>
+        <a href="#contact" class="text-xs font-semibold tracking-widest uppercase hover:text-alfa-cyan transition-colors duration-300">
+            Connect
+        </a>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative h-screen w-full flex flex-col justify-center items-center px-4">
+        
+        <div class="flex flex-col items-center justify-center float-anim gsap-reveal hero-group">
+            <!-- Main Logo Text -->
+            <h1 class="brand-text">ALFA</h1>
+            
+            <!-- Secondary Text -->
+            <div class="brand-sub mt-2 mb-12">CREATION</div>
+            
+            <!-- Tagline -->
+            <p class="brand-tagline text-gray-400">
+                Create Your Design <span>With ALFA</span>
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <a href="#contact" class="absolute bottom-10 flex flex-col items-center gap-2 text-gray-500 hover:text-alfa-cyan transition-colors duration-300 gsap-reveal hero-group">
+            <span class="text-[10px] tracking-[0.2em] uppercase">Scroll</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce"></i>
+        </a>
+    </main>
+
+    <!-- Contact Bento Grid Section -->
+    <section id="contact" class="relative min-h-screen w-full flex items-center justify-center px-4 py-24 z-10 bg-gradient-to-b from-transparent to-[#020306]">
+        
+        <div class="w-full max-w-5xl">
+            <div class="mb-12 text-center gsap-reveal grid-item">
+                <h2 class="text-3xl md:text-4xl font-light tracking-wide text-white mb-2">Connect with <span class="font-logo font-bold text-alfa-cyan">ALFA</span></h2>
+                <p class="text-gray-400 text-sm tracking-widest uppercase">Digital & Physical Hubs</p>
+            </div>
+
+            <!-- Grid Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4 md:gap-6 auto-rows-[200px]">
+                
+                <!-- Status & Availability (Col Span 1, Row 1) -->
+                <div class="bento-panel p-8 flex flex-col justify-between gsap-reveal grid-item cursor-default group" id="bento-1">
+                    <div class="bento-content">
+                        <div class="flex items-center gap-3 mb-6">
+                            <i data-lucide="clock" class="text-gray-400 w-5 h-5"></i>
+                            <span class="text-xs tracking-widest uppercase text-gray-400">Status</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="status-dot"></div>
+                            <span class="text-2xl font-light text-white tracking-wide">Always Open</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Location (Col Span 2, Row 1) -->
+                <div class="bento-panel p-8 flex flex-col justify-between md:col-span-2 gsap-reveal grid-item group" id="bento-2">
+                    <div class="bento-content">
+                        <div class="flex items-center gap-3 mb-6">
+                            <i data-lucide="map-pin" class="text-gray-400 w-5 h-5"></i>
+                            <span class="text-xs tracking-widest uppercase text-gray-400">Headquarters & Service Areas</span>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-light text-alfa-cyan mb-2 leading-relaxed">
+                            Liyanagemulla, Seeduwa<br>Sri Lanka, 11410
+                        </h3>
+                        <p class="text-gray-400 text-sm">Colombo · Negombo · Seeduwa</p>
+                    </div>
+                </div>
+
+                <!-- Digital Links (Col Span 1, Row 2) -->
+                <a href="https://linktr.ee" target="_blank" class="bento-panel p-8 flex flex-col justify-between gsap-reveal grid-item group block" id="bento-3">
+                    <div class="bento-content h-full flex flex-col justify-between">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="link-2" class="text-gray-400 w-5 h-5 group-hover:text-alfa-cyan transition-colors"></i>
+                            <span class="text-xs tracking-widest uppercase text-gray-400">Links</span>
+                        </div>
+                        <div class="flex items-end justify-between">
+                            <span class="text-lg font-medium text-white group-hover:text-alfa-cyan transition-colors">linktr.ee</span>
+                            <i data-lucide="arrow-up-right" class="text-gray-500 w-5 h-5 group-hover:text-alfa-cyan transition-all transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Contact Channels (Col Span 2, Row 2) -->
+                <div class="bento-panel p-8 flex flex-col justify-center md:col-span-2 gsap-reveal grid-item group" id="bento-4">
+                    <div class="bento-content">
+                        <div class="flex items-center gap-3 mb-6">
+                            <i data-lucide="phone-call" class="text-gray-400 w-5 h-5"></i>
+                            <span class="text-xs tracking-widest uppercase text-gray-400">Direct Comms</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <!-- Phones -->
+                            <div class="space-y-4">
+                                <a href="tel:+94771467469" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+                                    <i data-lucide="phone" class="w-4 h-4 text-alfa-cyan"></i>
+                                    <span class="text-sm font-medium tracking-wide">+94 77 146 7469</span>
+                                </a>
+                                <a href="https://wa.me/94781467469" target="_blank" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+                                    <!-- Custom simple WA icon using Lucide message-circle -->
+                                    <i data-lucide="message-circle" class="w-4 h-4 text-[#25D366]"></i>
+                                    <span class="text-sm font-medium tracking-wide">+94 78 146 7469</span>
+                                </a>
+                            </div>
+                            <!-- Email -->
+                            <div class="space-y-4">
+                                <a href="mailto:alfacreation019@gmail.com" class="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
+                                    <i data-lucide="mail" class="w-4 h-4 text-alfa-cyan"></i>
+                                    <span class="text-sm font-medium tracking-wide break-all">alfacreation019@gmail.com</span>
+                                </a>
+                                <div class="flex items-center gap-3 text-gray-500">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                    <span class="text-sm font-medium tracking-wide">ALFA Creation (Messenger)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full py-8 text-center text-xs tracking-[0.2em] text-gray-600 uppercase border-t border-white/5 bg-[#020306]">
+        &copy; 2026 ALFA Creation. All Rights Reserved.
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Initialize Icons
+        lucide.createIcons();
+
+        // 2. Three.js Background Implementation (Wavy glowing lines)
+        const initThreeJSBackground = () => {
+            const container = document.getElementById('webgl-container');
+            const scene = new THREE.Scene();
+            
+            // Fog to fade out edges smoothly matching the dark vibe
+            scene.fog = new THREE.FogExp2(0x03050a, 0.0015);
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Create a plane geometry with many segments to manipulate vertices
+            const geometry = new THREE.PlaneGeometry(200, 200, 60, 60);
+            
+            // Material: Wireframe for that tech/abstract line aesthetic
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x0055ff, 
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15 // Very subtle, as requested for a premium background
+            });
+
+            const plane = new THREE.Mesh(geometry, material);
+            
+            // Rotate plane to lie flat, then tilt towards camera
+            plane.rotation.x = -Math.PI / 2 + 0.2;
+            plane.position.y = -20;
+            scene.add(plane);
+
+            camera.position.z = 60;
+            camera.position.y = 10;
+
+            // Save original Z positions for animation
+            const positionAttribute = geometry.attributes.position;
+            const originalZs = [];
+            for (let i = 0; i < positionAttribute.count; i++) {
+                originalZs.push(positionAttribute.getZ(i));
+            }
+
+            let clock = new THREE.Clock();
+
+            // Animation Loop
+            const animate = () => {
+                requestAnimationFrame(animate);
+                const elapsedTime = clock.getElapsedTime();
+
+                // Manipulate vertices to create a flowing wave
+                for (let i = 0; i < positionAttribute.count; i++) {
+                    const x = positionAttribute.getX(i);
+                    const y = positionAttribute.getY(i);
+                    
+                    // Complex sine/cosine mix for organic fluid movement
+                    const z = originalZs[i] 
+                            + Math.sin(x * 0.05 + elapsedTime * 0.5) * 5 
+                            + Math.cos(y * 0.05 + elapsedTime * 0.3) * 5;
+                    
+                    positionAttribute.setZ(i, z);
+                }
+                positionAttribute.needsUpdate = true;
+                
+                // Slow rotation of the entire plane
+                plane.rotation.z = elapsedTime * 0.02;
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // 3. GSAP Animations (Cinematic Entrance)
+        const initAnimations = () => {
+            // Remove visibility hidden to allow GSAP to handle opacity
+            gsap.set(".gsap-reveal", { visibility: "visible" });
+
+            const tl = gsap.timeline();
+
+            // Intro fade in for nav and hero
+            tl.fromTo("nav", 
+                { y: -20, opacity: 0 }, 
+                { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
+            )
+            .fromTo(".hero-group", 
+                { y: 30, opacity: 0, filter: "blur(10px)" }, 
+                { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.5, stagger: 0.2, ease: "power4.out" },
+                "-=0.5" // Start slightly before nav finishes
+            );
+
+            // Scroll Trigger logic for the Bento Grid
+            // Using Intersection Observer to trigger GSAP when scrolling down
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        gsap.fromTo(entry.target,
+                            { y: 50, opacity: 0 },
+                            { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
+                        );
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.grid-item').forEach(item => {
+                observer.observe(item);
+            });
+        };
+
+        // 4. Interactive Bento Mouse Hover Glow Effect
+        const initBentoHover = () => {
+            document.querySelectorAll('.bento-panel').forEach(panel => {
+                panel.onmousemove = e => {
+                    const rect = panel.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    panel.style.setProperty('--mouse-x', `${x}px`);
+                    panel.style.setProperty('--mouse-y', `${y}px`);
+                }
+            });
+        };
+
+        // Execute all scripts on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeJSBackground();
+            initAnimations();
+            initBentoHover();
+        });
+
+    </script>
+</body>
+</html>
